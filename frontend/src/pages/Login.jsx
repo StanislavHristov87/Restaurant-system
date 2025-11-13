@@ -1,10 +1,12 @@
 import { useState } from "react";
 import api from "../services/api"
+import { useAuth } from "../context/AuthContext";
+
 
 const LoginPage = () => {
     const [formData, setFormData] = useState({
-        name: "",
         email: "",
+        password: "",
     });
 
     const [message, setMessage] = useState("");
@@ -13,15 +15,21 @@ const LoginPage = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    const { dispatch } = useAuth();
+
     const handleSubmit = async (e) => {
         e.preventDefault();
     
     try {
         const response = await api.post("/users/login", formData);
         setMessage("Login successful !");
-        console.log("User data", response.data);
 
-        localStorage.setItem("token", response.data.token);
+        dispatch({ type: "LOGIN",
+         payload: {
+            user: response.data.user,
+             token: response.data.token
+            }, 
+            });
         
     } catch (error) {
         setMessage(error.response?.data?.message || "Error login !");

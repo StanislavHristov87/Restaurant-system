@@ -1,5 +1,7 @@
 import { useState } from "react";
 import api from "../services/api"
+import { useAuth } from "../context/AuthContext";
+
 
 const RegisterPage = () => {
     const [formData, setFormData] = useState({
@@ -9,17 +11,31 @@ const RegisterPage = () => {
     });
 
     const [message, setMessage] = useState("");
+     const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    const { dispatch } = useAuth();
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        setMessage
 
         try {
             const response = await api.post("/users/register", formData);
-            setMessage(response.data.message);
+            setMessage("Registration successful !");
+
+                dispatch({ 
+                    type: "REGISTER",
+                 payload: {
+                    user: response.data.user,
+                     token: response.data.token,
+                    }, 
+                    });
+            
         } catch (error) {
             setMessage(error.response?.data?.message || "Error with registration ! ");
         }
@@ -35,6 +51,7 @@ const RegisterPage = () => {
         placeholder="Name"
         value={formData.name}
         onChange={handleChange}
+        required
         />
         <br />
         <input 
@@ -42,7 +59,8 @@ const RegisterPage = () => {
         name="email"
         placeholder="Email"
         value={formData.email}
-        onChange={handleChange} 
+        onChange={handleChange}
+        required
         />
         <br />
         <input 
@@ -51,8 +69,10 @@ const RegisterPage = () => {
         placeholder="Password"
         value={formData.password}
         onChange={handleChange}
+        required
         />
-        <button type="submit">Register</button>
+        <button type="submit" disabled={loading}>
+            {loading ? "Registering..." : "Register"}</button>
             </form>
             {message && <p>{message}</p>}
         </div>
