@@ -1,6 +1,7 @@
 import { useState } from "react";
 import api from "../services/api"
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 
 const LoginPage = () => {
@@ -10,6 +11,8 @@ const LoginPage = () => {
     });
 
     const [message, setMessage] = useState("");
+    const navigate = useNavigate();
+
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -30,6 +33,8 @@ const LoginPage = () => {
              token: response.data.token
             }, 
             });
+
+            navigate("/dashboard");
         
     } catch (error) {
         setMessage(error.response?.data?.message || "Error login !");

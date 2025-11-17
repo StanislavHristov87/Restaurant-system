@@ -22,7 +22,7 @@ const RegisterPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setMessage
+        setMessage("")
 
         try {
             const response = await api.post("/users/register", formData);
